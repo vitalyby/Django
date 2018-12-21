@@ -1,6 +1,8 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from .models import Question
 from django.shortcuts import get_object_or_404, render
+import requests
+import pandas as pd
 
 
 # def index(request):
@@ -22,6 +24,14 @@ def results(request, question_id):
 
 def vote(request, question_id):
     return HttpResponse("You're voting on question %s." % question_id)
+
+def rate(request, question_id):
+    url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
+    # tables = pd.read_html(requests.get(url).text, header=0)
+    a = requests.get(url).text
+    b = pd.Series(a)
+
+    return HttpResponse("выводим массив \n %s." % b)
 
 
 def detail(request, question_id):
