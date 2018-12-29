@@ -35,4 +35,4 @@ class Valuta(models.Model):
     Cur_OfficialRate = models.IntegerField()
 
     def __str__(self):
-        return self.Cur_Abbreviation
+        return self.Cur_Name

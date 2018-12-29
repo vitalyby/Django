@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpRequest
-from .models import Question
+from .models import Question, Valuta
 from django.shortcuts import get_object_or_404, render
 import requests
 import re
@@ -29,14 +29,16 @@ def vote(request, question_id):
 
 def rate(request, question_id):
     url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
-    spisok_kursov = requests.get(url).text.split('},{')[1:-1]
-    df = pd.DataFrame(columns=['Cur_ID', 'Date', 'Cur_Abbreviation', 'Cur_Scale', 'Cur_Name', 'Cur_OfficialRate'])
-    for r_kurs in spisok_kursov:
-        df.loc[r_kurs] = r_kurs.split(',')
+    spisok_kursov = requests.get(url).json()
+    df = pd.DataFrame(spisok_kursov)
     df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
-    df1 = pd.read_csv("file_rates")
-
-    return HttpResponse(df1.to_html(table_id=None))
+    # df1 = pd.read_csv("file_rates")
+    for row_k in spisok_kursov:
+        print(row_k['Cur_ID'])
+        v = Valuta(Cur_ID=row_k['Cur_ID'], Date=row_k['Date'], Cur_Abbreviation=row_k['Cur_Abbreviation'],
+                   Cur_Scale=row_k['Cur_Scale'], Cur_Name=row_k['Cur_Name'], Cur_OfficialRate=row_k['Cur_OfficialRate'])
+        v.save()
+    return HttpResponse(df.to_html(table_id=None))
 
 
 def detail(request, question_id):
