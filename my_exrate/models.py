@@ -1,6 +1,8 @@
 import datetime
 from django.db import models
 from django.utils import timezone
+
+
 #
 
 class Question(models.Model):
@@ -21,3 +23,16 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+
+# Cur_ID,Date,Cur_Abbreviation,Cur_Scale,Cur_Name,Cur_OfficialRate
+class Valuta(models.Model):
+    Cur_ID = models.IntegerField()
+    Date = models.DateTimeField('Date rate')
+    Cur_Abbreviation = models.CharField(max_length=3)
+    Cur_Scale = models.IntegerField(default=1)
+    Cur_Name = models.CharField(max_length=200)
+    Cur_OfficialRate = models.IntegerField()
+
+    def __str__(self):
+        return self.Cur_Abbreviation
