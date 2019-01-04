@@ -27,7 +27,14 @@ class Choice(models.Model):
 
 # Cur_ID,Date,Cur_Abbreviation,Cur_Scale,Cur_Name,Cur_OfficialRate
 class Valuta(models.Model):
-    Cur_ID = models.IntegerField()
+    Cur_ID = models.IntegerField(primary_key=True)
+
+    def __str__(self):
+        return self.Cur_ID
+
+
+class Valuta_kurs(models.Model):
+    Cur_ID = models.ForeignKey(Valuta, on_delete=models.CASCADE)
     Date = models.DateTimeField('Date rate')
     Cur_Abbreviation = models.CharField(max_length=3)
     Cur_Scale = models.IntegerField(default=1)
@@ -35,4 +42,4 @@ class Valuta(models.Model):
     Cur_OfficialRate = models.IntegerField()
 
     def __str__(self):
-        return self.Cur_Name
+        return self.Cur_ID
