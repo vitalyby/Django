@@ -18,8 +18,6 @@ from django.urls import path
 from django.conf.urls import include, url
 
 urlpatterns = [
-    url(r'^my_exrate/', include('my_exrate.urls')),
+    url(r'', include('my_exrate.urls')),
     path('admin/', admin.site.urls),
 ]
-
-

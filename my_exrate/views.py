@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render
 import requests
@@ -23,7 +23,7 @@ def index(request):
     return HttpResponse(df.to_html(table_id=None))
 
 
-# построить график курсов
+# построить график курсов  -- amcharts
 def graf(request):
     import matplotlib.pyplot as plt
 
@@ -56,6 +56,31 @@ def csv_file(request):
     writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"'])
 
     return response
+
+
+def insert_rate(request):
+    import datetime
+    now = datetime.datetime.now()
+    kurs_USD = Valuta.objects.filter(Cur_ID=145)[0]
+    Valuta_kurs.objects.bulk_create([Valuta_kurs(Cur_Abbreviation='USD', Cur_ID=kurs_USD,
+                                                 Cur_Name='fsdfds', Cur_OfficialRate=2.1123, Cur_Scale=1,
+                                                 Date=now.isoformat())])
+    return HttpResponse(kurs_USD)
+
+
+def select_rate(request):
+    kurs_USD2 = Valuta_kurs.objects.filter(Cur_ID=145)
+    return HttpResponse(kurs_USD2)
+
+
+def delete_rate(request):
+    kurs_USD3 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_Name='fsdfds').delete()
+    return HttpResponse(kurs_USD3)
+
+
+def update_rate(request):
+    kurs_USD4 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_Name='fsdfds').update(Cur_OfficialRate=1.9999)
+    return HttpResponse(kurs_USD4)
 
 
 def questions(request):
