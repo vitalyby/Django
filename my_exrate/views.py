@@ -23,6 +23,41 @@ def index(request):
     return HttpResponse(df.to_html(table_id=None))
 
 
+# построить график курсов
+def graf(request):
+    import matplotlib.pyplot as plt
+
+    # from matplotlib import rc
+    import numpy as np
+    # rc('font', family='Verdana')
+    # url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
+    # spisok_kursov = requests.get(url).json()
+    # df = pd.DataFrame(spisok_kursov)
+    # print(df.loc[df['Cur_ID'] == 170])
+    # x = df.loc[df['Cur_ID'] == 170]
+    x = 3
+    plt.plot(x, x * 1.5, label='Первая линия')
+    plt.plot(x, x * 3.0, label='Вторая декада')
+    plt.plot(x, x / 3.0, label='Третья декада')
+    plt.legend(loc='right')  # так же указываем положение легенды
+    plt.savefig('foo.png')
+    image_data = open("foo.png", "rb").read()
+
+    return HttpResponse(image_data, content_type="image/png")
+
+
+# скачать файл csv
+def csv_file(request):
+    import csv
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename = "file_rates"'
+    writer = csv.writer(response)
+    writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+    writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"'])
+
+    return response
+
+
 def questions(request):
     latest_question_list = Question.objects.order_by('id')[:5]
     context = {'latest_question_list': latest_question_list}

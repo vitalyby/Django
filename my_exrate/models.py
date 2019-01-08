@@ -39,7 +39,7 @@ class Valuta_kurs(models.Model):
     Cur_Abbreviation = models.CharField(max_length=3)
     Cur_Scale = models.IntegerField(default=1)
     Cur_Name = models.CharField(max_length=200)
-    Cur_OfficialRate = models.IntegerField()
+    Cur_OfficialRate = models.DecimalField(max_digits=16, decimal_places=4)
 
     def __str__(self):
-        return self.Cur_ID
+        return self.Cur_Abbreviation + '_' + str(self.Date.date())
