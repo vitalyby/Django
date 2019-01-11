@@ -29,20 +29,27 @@ def index(request):
 
 # построить график курсов  -- amcharts
 def amcharts(request):
+    prefix = ''
+    chartData = "["
     for val_1 in Valuta.objects.filter(Cur_ID=23):
         # for val_1 in Valuta.objects.all():
         x = []
         y = []
         for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
-            x.append(rate_1.Date.isoformat())
-            y.append(rate_1.Cur_OfficialRate)
-        # x - Date y - Cur_OfficialRate label - Cur_Abbreviation
-        plt.plot(x, y, label=val_1.Cur_Abbreviation)
-        plt.legend(loc='right')  # так же указываем положение легенды
-    plt.savefig('foo.png')
-    image_data = open("foo.png", "rb").read()
+            chartData += prefix
+            chartData += "{\n"
+            chartData += "                      date: "
+            chartData += "new Date(" + str(rate_1.Date.year) + ","
+            chartData += str(rate_1.Date.month - 1) + ","
+            chartData += str(rate_1.Date.day) + ","
+            chartData += str(rate_1.Date.hour) + ","
+            chartData += str(rate_1.Date.minute) + "),\n"
+            chartData += "                      value: "
+            chartData += str(rate_1.Cur_OfficialRate) + "\n                      }"
+            prefix = ", "
+        chartData += "]"
 
-    return render(request, 'my_exrate/amcharts.html', {'header': val_1.Cur_Abbreviation})
+    return render(request, 'my_exrate/amcharts.html', locals(), {'header': val_1.Cur_Abbreviation})
 
 
 def graf(request):
