@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Question, Valuta_kurs, Valuta
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, render_to_response
 import requests
 import pandas as pd
 import datetime
@@ -16,40 +16,47 @@ def index(request):
     df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
     for row_k in spisok_kursov:
         if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
-            kurs = Valuta(Cur_ID=row_k['Cur_ID'], Cur_Abbreviation=row_k['Cur_Abbreviation'],
-                          Cur_Scale=row_k['Cur_Scale'], Cur_Name=row_k['Cur_Name'])
+            kurs = Valuta(Cur_ID=row_k['Cur_ID'],
+                          Cur_Abbreviation=row_k['Cur_Abbreviation'],
+                          Cur_Scale=row_k['Cur_Scale'],
+                          Cur_Name=row_k['Cur_Name'])
             kurs.save()
-        if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date']).exists() == False:
+        if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
+                                      Date=row_k['Date']).exists() == False:
             val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
                               Cur_OfficialRate=row_k['Cur_OfficialRate'])
             val.save()
 
-    return HttpResponse(df.to_html(table_id=None))
+    return render_to_response('my_exrate/index.html', {'table': df.to_html(table_id=None)})
+    # return render('my_exrate/index.html' , df.to_html(table_id=None))
 
 
 # построить график курсов  -- amcharts
 def amcharts(request):
-    prefix = ''
-    chartData = "["
+    chartData = ""
     for val_1 in Valuta.objects.filter(Cur_ID=23):
         # for val_1 in Valuta.objects.all():
         x = []
         y = []
+        i = 0
         for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
             chartData += prefix
             chartData += "{\n"
-            chartData += "                      date: "
-            chartData += "new Date(" + str(rate_1.Date.year) + ","
-            chartData += str(rate_1.Date.month - 1) + ","
-            chartData += str(rate_1.Date.day) + ","
-            chartData += str(rate_1.Date.hour) + ","
-            chartData += str(rate_1.Date.minute) + "),\n"
-            chartData += "                      value: "
-            chartData += str(rate_1.Cur_OfficialRate) + "\n                      }"
-            prefix = ", "
-        chartData += "]"
+            chartData += "x:" + str(i)
+            chartData += ",\nay:" + str(rate_1.Date.year) + str(
+                rate_1.Date.month) + str(rate_1.Date.day) + ",\n"
+            chartData += "by: 1, \n"
+            chartData += "aValue: " + str(rate_1.Cur_OfficialRate) + ",\n"
+            chartData += "bValue: 1" + "\n}"
+            i += i
+    chartData += ","
+    print(chartData)
 
-    return render(request, 'my_exrate/amcharts.html', locals(), {'header': val_1.Cur_Abbreviation})
+    return render(request, 'my_exrate/amcharts.html', locals())
+
+
+# return render(request, 'my_exrate/amcharts.html', {'header': val_1.Cur_Abbreviation})
+# return render(request, 'my_exrate/amcharts.html', locals())
 
 
 def graf(request):
@@ -83,7 +90,9 @@ def csv_file(request):
 
 def insert_rate(request):
     kurs_USD = Valuta.objects.filter(Cur_ID=145)[0]
-    Valuta_kurs.objects.bulk_create([Valuta_kurs(Cur_ID=kurs_USD, Cur_OfficialRate=2.1123, Date=now.isoformat())])
+    Valuta_kurs.objects.bulk_create([Valuta_kurs(Cur_ID=kurs_USD,
+                                                 Cur_OfficialRate=2.1123,
+                                                 Date=now.isoformat())])
     return HttpResponse(kurs_USD)
 
 
@@ -93,12 +102,15 @@ def select_rate(request):
 
 
 def delete_rate(request):
-    kurs_USD3 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_OfficialRate=2.1123).delete()
+    kurs_USD3 = Valuta_kurs.objects.filter(Cur_ID=145,
+                                           Cur_OfficialRate=2.1123).delete()
     return HttpResponse(kurs_USD3)
 
 
 def update_rate(request):
-    kurs_USD4 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_OfficialRate=2.1123).update(Cur_OfficialRate=1.9999)
+    kurs_USD4 = Valuta_kurs.objects.filter(Cur_ID=145,
+                                           Cur_OfficialRate=2.1123).update(
+        Cur_OfficialRate=1.9999)
     return HttpResponse(kurs_USD4)
 
 
