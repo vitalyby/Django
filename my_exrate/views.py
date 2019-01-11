@@ -3,6 +3,10 @@ from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render
 import requests
 import pandas as pd
+import datetime
+import matplotlib.pyplot as plt
+
+now = datetime.datetime.now()
 
 
 def index(request):
@@ -12,11 +16,11 @@ def index(request):
     df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
     for row_k in spisok_kursov:
         if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
-            kurs = Valuta(Cur_ID=row_k['Cur_ID'])
+            kurs = Valuta(Cur_ID=row_k['Cur_ID'], Cur_Abbreviation=row_k['Cur_Abbreviation'],
+                          Cur_Scale=row_k['Cur_Scale'], Cur_Name=row_k['Cur_Name'])
             kurs.save()
         if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date']).exists() == False:
-            val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'], Cur_Abbreviation=row_k['Cur_Abbreviation'],
-                              Cur_Scale=row_k['Cur_Scale'], Cur_Name=row_k['Cur_Name'],
+            val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
                               Cur_OfficialRate=row_k['Cur_OfficialRate'])
             val.save()
 
@@ -24,22 +28,34 @@ def index(request):
 
 
 # построить график курсов  -- amcharts
-def graf(request):
-    import matplotlib.pyplot as plt
+def amcharts(request):
+    for val_1 in Valuta.objects.filter(Cur_ID=23):
+        # for val_1 in Valuta.objects.all():
+        x = []
+        y = []
+        for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
+            x.append(rate_1.Date.isoformat())
+            y.append(rate_1.Cur_OfficialRate)
+        # x - Date y - Cur_OfficialRate label - Cur_Abbreviation
+        plt.plot(x, y, label=val_1.Cur_Abbreviation)
+        plt.legend(loc='right')  # так же указываем положение легенды
+    plt.savefig('foo.png')
+    image_data = open("foo.png", "rb").read()
 
-    # from matplotlib import rc
-    import numpy as np
-    # rc('font', family='Verdana')
-    # url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
-    # spisok_kursov = requests.get(url).json()
-    # df = pd.DataFrame(spisok_kursov)
-    # print(df.loc[df['Cur_ID'] == 170])
-    # x = df.loc[df['Cur_ID'] == 170]
-    x = 3
-    plt.plot(x, x * 1.5, label='Первая линия')
-    plt.plot(x, x * 3.0, label='Вторая декада')
-    plt.plot(x, x / 3.0, label='Третья декада')
-    plt.legend(loc='right')  # так же указываем положение легенды
+    return render(request, 'my_exrate/amcharts.html', {'header': val_1.Cur_Abbreviation})
+
+
+def graf(request):
+    for val_1 in Valuta.objects.filter(Cur_ID=23):
+        # for val_1 in Valuta.objects.all():
+        x = []
+        y = []
+        for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
+            x.append(rate_1.Date.isoformat())
+            y.append(rate_1.Cur_OfficialRate)
+        # x - Date y - Cur_OfficialRate label - Cur_Abbreviation
+        plt.plot(x, y, label=val_1.Cur_Abbreviation)
+        plt.legend(loc='right')  # так же указываем положение легенды
     plt.savefig('foo.png')
     image_data = open("foo.png", "rb").read()
 
@@ -59,12 +75,8 @@ def csv_file(request):
 
 
 def insert_rate(request):
-    import datetime
-    now = datetime.datetime.now()
     kurs_USD = Valuta.objects.filter(Cur_ID=145)[0]
-    Valuta_kurs.objects.bulk_create([Valuta_kurs(Cur_Abbreviation='USD', Cur_ID=kurs_USD,
-                                                 Cur_Name='fsdfds', Cur_OfficialRate=2.1123, Cur_Scale=1,
-                                                 Date=now.isoformat())])
+    Valuta_kurs.objects.bulk_create([Valuta_kurs(Cur_ID=kurs_USD, Cur_OfficialRate=2.1123, Date=now.isoformat())])
     return HttpResponse(kurs_USD)
 
 
@@ -74,12 +86,12 @@ def select_rate(request):
 
 
 def delete_rate(request):
-    kurs_USD3 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_Name='fsdfds').delete()
+    kurs_USD3 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_OfficialRate=2.1123).delete()
     return HttpResponse(kurs_USD3)
 
 
 def update_rate(request):
-    kurs_USD4 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_Name='fsdfds').update(Cur_OfficialRate=1.9999)
+    kurs_USD4 = Valuta_kurs.objects.filter(Cur_ID=145, Cur_OfficialRate=2.1123).update(Cur_OfficialRate=1.9999)
     return HttpResponse(kurs_USD4)
 
 
