@@ -11,7 +11,26 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="card card-header bg-light">header</div>
+            <div class="card card-header bg-light">
+                <form class="form-signin" method="post" action="login.html">
+
+                    <input type="text" name="username">
+                    <input type="password" name="password">
+                    <button class="btn btn-primary" style="width: 200px"
+                            type="submit">Sign in
+                    </button>
+                    <div class="checkbox mb-3">
+                    </div>
+                </form>
+                <h3>{{ user }}</h3>
+                <form method="post" action="logout.html">
+                    <button class="btn btn-primary" style="width: 200px"
+                            type="submit">Logout
+                    </button>
+                    <div class="checkbox mb-3">
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -30,7 +49,11 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <div class="card card-body bg-light" style="padding: 0px, height: 100%">footer</div>
+            <div class="card card-body bg-light"
+                 style="padding: 0px, height: 100%">
+                <a href="./145" class="btn btn-primary btn-lg active"
+                   role="button" aria-pressed="true">USD</a>
+            </div>
         </div>
     </div>
 </div>

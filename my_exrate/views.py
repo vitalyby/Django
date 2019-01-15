@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login, logout
 from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render, render_to_response
 import requests
@@ -22,17 +23,40 @@ def index(request):
                           Cur_Name=row_k['Cur_Name'])
             kurs.save()
         else:
-            df['grafik'] = '< a href="./'+str(row_k['Cur_ID'])+'" class ="btn btn-primary btn-lg active" role="button" aria-pressed="true">'+str(row_k['Cur_ID'])+'< / a >'
-            print(df['grafik'])
+            df['grafik'] = '<a href="./' + str(row_k[
+                                                   'Cur_ID']) + '" class ="btn btn-primary btn-lg active" role="button" aria-pressed="true">amchart</a>'
         if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
                                       Date=row_k['Date']).exists() == False:
             val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
                               Cur_OfficialRate=row_k['Cur_OfficialRate'])
             val.save()
+    # print(df.columns)
+    if request.user.is_authenticated:
+        username = request.user
+    else:
+        username = 'Аноним'
 
-    return render_to_response('my_exrate/index.html', {'table': df.to_html(table_id=None)})
+    return render_to_response('my_exrate/index.html',
+                              {'table': df.to_html(table_id=None),
+                               'user': username})
     # return render('my_exrate/index.html' , df.to_html(table_id=None))
 
+
+def login_user(request):
+    user = authenticate(username=request.POST.get('username'),
+                        password=request.POST.get('password'))
+    if user is None:
+        return render_to_response('my_exrate/login.html', {})
+    else:
+        login(request, user)
+
+    return HttpResponseRedirect('/')
+
+
+def logout_user(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return HttpResponseRedirect('/')
 
 # построить график курсов  -- amcharts
 def amcharts(request, Cur_ID):
