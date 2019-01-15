@@ -21,6 +21,9 @@ def index(request):
                           Cur_Scale=row_k['Cur_Scale'],
                           Cur_Name=row_k['Cur_Name'])
             kurs.save()
+        else:
+            df['grafik'] = '< a href="./'+str(row_k['Cur_ID'])+'" class ="btn btn-primary btn-lg active" role="button" aria-pressed="true">'+str(row_k['Cur_ID'])+'< / a >'
+            print(df['grafik'])
         if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
                                       Date=row_k['Date']).exists() == False:
             val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
@@ -32,25 +35,24 @@ def index(request):
 
 
 # построить график курсов  -- amcharts
-def amcharts(request):
+def amcharts(request, Cur_ID):
     chartData = ""
-    for val_1 in Valuta.objects.filter(Cur_ID=23):
+    for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
         # for val_1 in Valuta.objects.all():
         x = []
         y = []
         i = 0
+        quot = "\""
         for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
-            chartData += prefix
+            # chartData += prefix
             chartData += "{\n"
-            chartData += "x:" + str(i)
-            chartData += ",\nay:" + str(rate_1.Date.year) + str(
-                rate_1.Date.month) + str(rate_1.Date.day) + ",\n"
-            chartData += "by: 1, \n"
-            chartData += "aValue: " + str(rate_1.Cur_OfficialRate) + ",\n"
-            chartData += "bValue: 1" + "\n}"
-            i += i
-    chartData += ","
-    print(chartData)
+            chartData += "date:" + quot + str(rate_1.Date.year) + "-" + str(
+                '{:02d}'.format(rate_1.Date.month)) + "-" + str(
+                '{:02d}'.format(rate_1.Date.day)) + quot + ",\n"
+            chartData += "value:" + str(rate_1.Cur_OfficialRate) + "\n}"
+            i = i + 1
+            chartData += ","
+            print(chartData)
 
     return render(request, 'my_exrate/amcharts.html', locals())
 
@@ -118,10 +120,6 @@ def questions(request):
     latest_question_list = Question.objects.order_by('id')[:5]
     context = {'latest_question_list': latest_question_list}
     return render(request, 'my_exrate/index.html', context)
-
-
-def detail(request, question_id):
-    return HttpResponse("You're looking at question %s." % question_id)
 
 
 def results(request, question_id):
