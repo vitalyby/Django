@@ -10,35 +10,65 @@ import matplotlib.pyplot as plt
 now = datetime.datetime.now()
 
 
+def login_form(sign, username):
+    if sign == 'in':
+        http_form = '<form method="post" action="logout.html"><button class ="badge badge-primary" type="submit">'+str(
+            username) + ' Logout</button></form>'
+    else:
+        http_form = '<form class="form-signin-sm" method="post" action="login.html"><input class="text text-sm" type="text" style="width:100px" name="username"><input class="text text-sm" type="password" style="width:100px" name="password"><button  class ="badge badge-primary" type="submit">Sign in </button></form>'
+
+    return http_form
+
+
 def index(request):
-    url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
-    spisok_kursov = requests.get(url).json()
-    df = pd.DataFrame(spisok_kursov)
-    df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
-    for row_k in spisok_kursov:
-        if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
-            kurs = Valuta(Cur_ID=row_k['Cur_ID'],
-                          Cur_Abbreviation=row_k['Cur_Abbreviation'],
-                          Cur_Scale=row_k['Cur_Scale'],
-                          Cur_Name=row_k['Cur_Name'])
-            kurs.save()
-        else:
-            df['grafik'] = '<a href="./' + str(row_k[
-                                                   'Cur_ID']) + '" class ="btn btn-primary btn-lg active" role="button" aria-pressed="true">amchart</a>'
-        if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
-                                      Date=row_k['Date']).exists() == False:
-            val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
-                              Cur_OfficialRate=row_k['Cur_OfficialRate'])
-            val.save()
-    # print(df.columns)
     if request.user.is_authenticated:
         username = request.user
+        url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
+        spisok_kursov = requests.get(url).json()
+        # чтобы df.to_html не обрезал длинные строки до 50 символов
+        pd.set_option('display.max_colwidth', -1)
+        df = pd.DataFrame(spisok_kursov)
+        # df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
+        df1 = pd.DataFrame(columns=['amchart'])
+        df2 = pd.DataFrame(columns=['matplotlib'])
+        for row_k in spisok_kursov:
+            str_1 = '<a href="./' + str(
+                row_k[
+                    'Cur_ID']) + '/amcharts" target="_blank" class ="badge badge-primary" style="width:50px">' + str(
+                row_k['Cur_Abbreviation']) + '</a>'
+            df1 = df1.append({'amchart': str_1}, ignore_index=True)
+            str_2 = '<a href="./' + str(
+                row_k[
+                    'Cur_ID']) + '/matplotlib" target="_blank" class ="badge badge-primary" style="width:50px">' + str(
+                row_k['Cur_Abbreviation']) + '</a>'
+            df2 = df2.append({'matplotlib': str_2}, ignore_index=True)
+            if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
+                kurs = Valuta(Cur_ID=row_k['Cur_ID'],
+                              Cur_Abbreviation=row_k['Cur_Abbreviation'],
+                              Cur_Scale=row_k['Cur_Scale'],
+                              Cur_Name=row_k['Cur_Name'])
+                kurs.save()
+            if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
+                                          Date=row_k['Date']).exists() == False:
+                val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
+                                  Cur_OfficialRate=row_k['Cur_OfficialRate'])
+                val.save()
+        df['amchart'] = df1
+        df['matplotlib'] = df2
+        table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
+                                 columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate', 'Cur_Scale',
+                                          'amchart', 'matplotlib'])
+
+        http_form = login_form('in', username)
     else:
         username = 'Аноним'
+        table_rates = 'Вы не зарегистрированы'
+        http_form = login_form('out', None)
 
     return render_to_response('my_exrate/index.html',
-                              {'table': df.to_html(table_id=None),
-                               'user': username})
+                              {'table': table_rates,
+                               'user': username, 'login_form': http_form})
+
     # return render('my_exrate/index.html' , df.to_html(table_id=None))
 
 
@@ -58,35 +88,38 @@ def logout_user(request):
         logout(request)
         return HttpResponseRedirect('/')
 
+
 # построить график курсов  -- amcharts
 def amcharts(request, Cur_ID):
     chartData = ""
-    for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
-        # for val_1 in Valuta.objects.all():
-        x = []
-        y = []
-        i = 0
-        quot = "\""
-        for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
-            # chartData += prefix
-            chartData += "{\n"
-            chartData += "date:" + quot + str(rate_1.Date.year) + "-" + str(
-                '{:02d}'.format(rate_1.Date.month)) + "-" + str(
-                '{:02d}'.format(rate_1.Date.day)) + quot + ",\n"
-            chartData += "value:" + str(rate_1.Cur_OfficialRate) + "\n}"
-            i = i + 1
-            chartData += ","
-            print(chartData)
-
-    return render(request, 'my_exrate/amcharts.html', locals())
+    if request.user.is_authenticated:
+        for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
+            # for val_1 in Valuta.objects.all():
+            x = []
+            y = []
+            i = 0
+            quot = "\""
+            for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
+                # chartData += prefix
+                chartData += "{\n"
+                chartData += "date:" + quot + str(rate_1.Date.year) + "-" + str(
+                    '{:02d}'.format(rate_1.Date.month)) + "-" + str(
+                    '{:02d}'.format(rate_1.Date.day)) + quot + ",\n"
+                chartData += "value:" + str(rate_1.Cur_OfficialRate) + "\n}"
+                i = i + 1
+                chartData += ","
+                # print(chartData)
+    else:
+        return render_to_response('my_exrate/amcharts.html', {})
+    return render(request, 'my_exrate/amcharts.html', {'header': val_1.Cur_Name, 'chartData': chartData})
 
 
 # return render(request, 'my_exrate/amcharts.html', {'header': val_1.Cur_Abbreviation})
 # return render(request, 'my_exrate/amcharts.html', locals())
 
-
-def graf(request):
-    for val_1 in Valuta.objects.filter(Cur_ID=23):
+# построить график курсов  -- matplotlib
+def matplotlib(request, Cur_ID):
+    for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
         # for val_1 in Valuta.objects.all():
         x = []
         y = []
