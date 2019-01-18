@@ -12,7 +12,7 @@ now = datetime.datetime.now()
 
 def login_form(sign, username):
     if sign == 'in':
-        http_form = '<form method="post" action="logout.html"><button class ="badge badge-primary" type="submit">'+str(
+        http_form = '<form method="post" action="logout.html"><button class ="badge badge-primary" type="submit">' + str(
             username) + ' Logout</button></form>'
     else:
         http_form = '<form class="form-signin-sm" method="post" action="login.html"><input class="text text-sm" type="text" style="width:100px" name="username"><input class="text text-sm" type="password" style="width:100px" name="password"><button  class ="badge badge-primary" type="submit">Sign in </button></form>'
@@ -69,9 +69,6 @@ def index(request):
                               {'table': table_rates,
                                'user': username, 'login_form': http_form})
 
-    # return render('my_exrate/index.html' , df.to_html(table_id=None))
-
-
 def login_user(request):
     user = authenticate(username=request.POST.get('username'),
                         password=request.POST.get('password'))
@@ -114,22 +111,30 @@ def amcharts(request, Cur_ID):
     return render(request, 'my_exrate/amcharts.html', {'header': val_1.Cur_Name, 'chartData': chartData})
 
 
-# return render(request, 'my_exrate/amcharts.html', {'header': val_1.Cur_Abbreviation})
-# return render(request, 'my_exrate/amcharts.html', locals())
-
 # построить график курсов  -- matplotlib
 def matplotlib(request, Cur_ID):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
     for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
+        ax.set_title(val_1.Cur_Name)
         # for val_1 in Valuta.objects.all():
         x = []
         y = []
         for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
-            x.append(rate_1.Date.isoformat())
+            x.append(datetime.datetime(year=rate_1.Date.year, month=rate_1.Date.month, day=rate_1.Date.day))
             y.append(rate_1.Cur_OfficialRate)
         # x - Date y - Cur_OfficialRate label - Cur_Abbreviation
-        plt.plot(x, y, label=val_1.Cur_Abbreviation)
-        plt.legend(loc='right')  # так же указываем положение легенды
+        ax.plot(x, y, label=val_1.Cur_Abbreviation)
+        ax.legend(loc='lower right')  # так же указываем положение легенды
+    for label in ax.xaxis.get_ticklabels():
+        # цвет подписи деленений оси OX
+        label.set_color('blue')
+        # поворот подписей деленений оси OX
+        label.set_rotation(30)
+        # размер шрифта подписей делений оси OX
+        label.set_fontsize(8)
     plt.savefig('foo.png')
+    plt.close()
     image_data = open("foo.png", "rb").read()
 
     return HttpResponse(image_data, content_type="image/png")
