@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render, render_to_response
 import requests
@@ -15,7 +16,11 @@ def login_form(sign, username):
         http_form = '<form method="post" action="logout.html"><button class ="badge badge-primary" type="submit">' + str(
             username) + ' Logout</button></form>'
     else:
-        http_form = '<form class="form-signin-sm" method="post" action="login.html"><input class="text text-sm" type="text" style="width:100px" name="username"><input class="text text-sm" type="password" style="width:100px" name="password"><button  class ="badge badge-primary" type="submit">Sign in </button></form>'
+        http_form = '<form class="form-signin-sm" method="post" action="login.html">' \
+                    '<input class="text text-sm" type="text" style="width:100px" name="username">' \
+                    '<input class="text text-sm" type="password" style="width:100px" name="password">' \
+                    '<button  class ="badge badge-primary" type="submit">Sign in </button>' \
+                    '</form><a href = "register">регистрация </a>'
 
     return http_form
 
@@ -69,6 +74,7 @@ def index(request):
                               {'table': table_rates,
                                'user': username, 'login_form': http_form})
 
+
 def login_user(request):
     user = authenticate(username=request.POST.get('username'),
                         password=request.POST.get('password'))
@@ -84,6 +90,17 @@ def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
         return HttpResponseRedirect('/')
+
+
+def register(request):
+    return render_to_response('my_exrate/register.html')
+
+
+def register_user(request):
+    user = User.objects.create_user(username=request.POST.get('username'), email=request.POST.get('email'),
+                                    password=request.POST.get('password'), is_staff=True)
+    login(request, user)
+    return HttpResponseRedirect('/')
 
 
 # построить график курсов  -- amcharts

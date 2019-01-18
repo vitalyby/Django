@@ -5,11 +5,12 @@
 {% endblock %}
 
 {% block common_body %}
-    <form class="form-signin" method="post" action="login.html">
+    <form class="form-signin" method="post" action="register_user">
 
         <input type="text" name="username">
+        <input type="email" name="email">
         <input type="password" name="password">
-        <button class="btn btn-primary" style="width: 200px" type="submit">Sign in
+        <button class="btn btn-primary" style="width: 200px" type="submit">Register
         </button>
     </form>
 {% endblock %}
