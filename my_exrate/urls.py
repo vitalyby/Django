@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^logout.html$', views.logout_user, name='logout'),
     url(r'^register$', views.register, name='register'),
     url(r'^register_user$', views.register_user, name='register'),
+    url(r'^my_exrate/check_user$', views.check_user, name='check_user'),
     # url(r'^(?P<question_id>[0-9]+)/$', views.detail, name='detail'),
     url(r'^(?P<question_id>[0-9]+)/results/$', views.results, name='results'),
     url(r'^(?P<question_id>[0-9]+)/vote/$', views.vote, name='vote'),

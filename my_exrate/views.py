@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Question, Valuta_kurs, Valuta
@@ -9,20 +9,6 @@ import datetime
 import matplotlib.pyplot as plt
 
 now = datetime.datetime.now()
-
-
-def login_form(sign, username):
-    if sign == 'in':
-        http_form = '<form method="post" action="logout.html"><button class ="badge badge-primary" type="submit">' + str(
-            username) + ' Logout</button></form>'
-    else:
-        http_form = '<form class="form-signin-sm" method="post" action="login.html">' \
-                    '<input class="text text-sm" type="text" style="width:100px" name="username">' \
-                    '<input class="text text-sm" type="password" style="width:100px" name="password">' \
-                    '<button  class ="badge badge-primary" type="submit">Sign in </button>' \
-                    '</form><a href = "register">регистрация </a>'
-
-    return http_form
 
 
 def index(request):
@@ -39,12 +25,12 @@ def index(request):
         for row_k in spisok_kursov:
             str_1 = '<a href="./' + str(
                 row_k[
-                    'Cur_ID']) + '/amcharts" target="_blank" class ="badge badge-primary" style="width:50px">' + str(
+                    'Cur_ID']) + '/amcharts" target="_blank" id="but_am" class ="badge badge-primary" style="width:50px">' + str(
                 row_k['Cur_Abbreviation']) + '</a>'
             df1 = df1.append({'amchart': str_1}, ignore_index=True)
             str_2 = '<a href="./' + str(
                 row_k[
-                    'Cur_ID']) + '/matplotlib" target="_blank" class ="badge badge-primary" style="width:50px">' + str(
+                    'Cur_ID']) + '/matplotlib" target="_blank" id="but_mat" class ="badge badge-primary" style="width:50px">' + str(
                 row_k['Cur_Abbreviation']) + '</a>'
             df2 = df2.append({'matplotlib': str_2}, ignore_index=True)
             if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
@@ -63,16 +49,13 @@ def index(request):
         table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
                                  columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate', 'Cur_Scale',
                                           'amchart', 'matplotlib'])
-
-        http_form = login_form('in', username)
     else:
         username = 'Аноним'
         table_rates = 'Вы не зарегистрированы'
-        http_form = login_form('out', None)
 
     return render_to_response('my_exrate/index.html',
                               {'table': table_rates,
-                               'user': username, 'login_form': http_form})
+                               'user': username, 'login_form': request.user.is_authenticated})
 
 
 def login_user(request):
@@ -101,6 +84,14 @@ def register_user(request):
                                     password=request.POST.get('password'), is_staff=True)
     login(request, user)
     return HttpResponseRedirect('/')
+
+
+def check_user(request):
+    username = User.objects.filter(username=request.POST.get('username'))
+    usr = username.User
+    print(usr)
+    response = {'user': usr}
+    return JsonResponse(response)
 
 
 # построить график курсов  -- amcharts

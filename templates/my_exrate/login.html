@@ -5,11 +5,18 @@
 {% endblock %}
 
 {% block common_body %}
-    <form class="form-signin" method="post" action="login.html">
+    <form class="form-signin-sm" method="post" action="login.html">
 
-        <input type="text" name="username">
-        <input type="password" name="password">
-        <button class="btn btn-primary" style="width: 200px" type="submit">Sign in
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username2" name="username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password2" name="password">
+        </div>
+        <button class="btn btn-primary" style="width: 200px" type="submit" id="login2">Login
         </button>
     </form>
+
 {% endblock %}

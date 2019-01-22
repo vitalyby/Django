@@ -1,28 +1,73 @@
-console.log('Hello word')
+// console.log('Hello word')
+//
+// function f_sum(a, b) {
+//     return a + b
+// }
+//
+// console.log(f_sum(4, 5))
+//
+// function f_1(a) {
+//     return a * 4
+// }
+//
+// console.log(f_1(5))
+//
+// var username = $('#username').val();
+//
+// function showMessage() {
+//     var message = 'Привет, я ' + username;
+//     alert(message);
+// }
 
-function f_sum(a, b) {
-    return a + b
-}
+// showMessage();
 
-console.log(f_sum(4, 5))
+// function someFunc() {
+//     alert(navigator.userAgent);
+// }
 
-function f_1(a) {
-    return a * 4
-}
+// console.log(someFunc())
 
-console.log(f_1(5))
+$(document).ready(function () {
 
-var username = $('#username').val();
+    $('#but_am').click(function (e) {
+        alert("Нажата кнопка id='but_am'")
+    })
 
-function showMessage() {
-  var message = 'Привет, я ' + username;
-  alert(message);
-}
+    $('#but_mat').click(function (e) {
+        alert("Нажата кнопка id='but_mat'")
+    })
+    $('#register').click(function (e) {
+        alert("register username='" + $('#username3').val() + "'")
+        // e.preventDefault()
+        $.post("my_exrate/check_user", {'username': $('#username3').val()}, function (response) {
+                alert("register0 username=" + response.user)
+            }
+        );
+    })
+    $('#login').click(function (e) {
+        if ($('#username').val() == '') {
+            alert("login empty")
+            e.preventDefault()
+        }
+        else {
+            if ($('#password').val().length < 3) {
+                alert("password short or empty")
+                e.preventDefault()
+            }
+        }
+    })
+    $('#login2').click(function (e) {
+        if ($('#username2').val() == 'admin') {
+            alert("login2 : Hi admin")
+            // e.preventDefault()
+        }
+        else {
+            alert("login2 username='" + $('#username2').val() + "'")
+        }
+    })
+    $('#logout').click(function (e) {
+        alert("logout username='" + $('#username').val() + "'")
+    })
 
-showMessage();
 
-function someFunc(){
-alert(navigator.userAgent);
-}
-
-console.log(someFunc())
+});
