@@ -41,8 +41,8 @@ $(document).ready(function () {
         e.preventDefault()
         alert("register username='" + $('#username3').val() + "'")
         $.post("my_exrate/check_user", {'username': $('#username3').val()}, function (response) {
-            alert("register0 username=" + response.user)
-            if (response.user == 'user_exists') {
+                alert("register0 username=" + response.user)
+                if (response.user == 'user_exists') {
                     alert("Такое имя " + $('#username3').val() + " уже занято.")
                 }
             }
