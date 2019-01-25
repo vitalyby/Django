@@ -14,16 +14,13 @@
     <div class="row" style="text-align: right;">
         <div class="col-12">
             <div class="card card-body bg-light">
-                {% if login_form %}
-                    <form method="post" action="logout.html">
-                        <button class="badge badge-primary" type="submit" id="logout">'{{ user }}' Logout</button>
-                    </form>
+                {% load static %}
+                {% if user.is_authenticated %}
+                    <a href="logout"><img border="0" alt="Logout: {{ user }}" src="{% static "image/logout.png" %}"></a>
+
                 {% else %}
-                    <form class="form-signin-sm" method="post" action="login.html">
-                        <input class="text text-sm" type="text" style="width:100px" name="username" id="username">
-                        <input class="text text-sm" type="password" style="width:100px" name="password" id="password">
-                        <button class="badge badge-primary" type="submit" id="login">Login</button>
-                    </form><a href="register">регистрация </a>
+                    <nobr><a href="login"><img border="0" alt="Войти" src="{% static "image/login.png" %}"></a>&nbsp;<a
+                            href="register"><img border="0" alt="Регистрация" src="{% static "image/register.png" %}"></a></nobr>
                 {% endif %}
             </div>
         </div>

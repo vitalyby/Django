@@ -87,9 +87,9 @@ def register_user(request):
 
 
 def check_user(request):
-    username = User.objects.filter(username=request.POST.get('username'))
-    usr = username.User
-    print(usr)
+    usr = 'ok'
+    if User.objects.filter(username=request.POST.get('username')).exists():
+        usr = 'user_exists'
     response = {'user': usr}
     return JsonResponse(response)
 
