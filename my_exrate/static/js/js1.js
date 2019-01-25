@@ -45,6 +45,17 @@ $(document).ready(function () {
                 if (response.user == 'user_exists') {
                     alert("Такое имя " + $('#username3').val() + " уже занято.")
                 }
+                else {
+                    $.post("register_user", {
+                            'username': $('#username3').val(),
+                            'email': $('#email3').val(),
+                            'password': $('#password3').val()
+                        }, function (response) {
+                            alert("register_end OK")
+                            document.location.href="/";
+                        }
+                    );
+                }
             }
         );
     })

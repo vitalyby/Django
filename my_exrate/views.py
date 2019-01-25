@@ -72,7 +72,7 @@ def login_user(request):
 def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
-        return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/')
 
 
 def register(request):
