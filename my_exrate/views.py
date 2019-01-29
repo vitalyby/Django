@@ -58,7 +58,7 @@ def index(request):
                                'user': username, 'login_form': request.user.is_authenticated})
 
 
-def login_user(request):
+def user_login(request):
     user = authenticate(username=request.POST.get('username'),
                         password=request.POST.get('password'))
     if user is None:
@@ -69,7 +69,7 @@ def login_user(request):
     return HttpResponseRedirect('/')
 
 
-def logout_user(request):
+def user_logout(request):
     if request.user.is_authenticated:
         logout(request)
     return HttpResponseRedirect('/')
@@ -79,14 +79,14 @@ def register(request):
     return render_to_response('my_exrate/register.html')
 
 
-def register_user(request):
+def user_register(request):
     user = User.objects.create_user(username=request.POST.get('username'), email=request.POST.get('email'),
                                     password=request.POST.get('password'), is_staff=True)
     login(request, user)
     return HttpResponseRedirect('/')
 
 
-def check_user(request):
+def user_check(request):
     usr = 'ok'
     if User.objects.filter(username=request.POST.get('username')).exists():
         usr = 'user_exists'
@@ -160,7 +160,7 @@ def csv_file(request):
     return response
 
 
-def insert_rate(request):
+def rate_insert(request):
     kurs_USD = Valuta.objects.filter(Cur_ID=145)[0]
     Valuta_kurs.objects.bulk_create([Valuta_kurs(Cur_ID=kurs_USD,
                                                  Cur_OfficialRate=2.1123,
@@ -168,18 +168,18 @@ def insert_rate(request):
     return HttpResponse(kurs_USD)
 
 
-def select_rate(request):
+def rate_select(request):
     kurs_USD2 = Valuta_kurs.objects.filter(Cur_ID=145)
     return HttpResponse(kurs_USD2)
 
 
-def delete_rate(request):
+def rate_delete(request):
     kurs_USD3 = Valuta_kurs.objects.filter(Cur_ID=145,
                                            Cur_OfficialRate=2.1123).delete()
     return HttpResponse(kurs_USD3)
 
 
-def update_rate(request):
+def rate_update(request):
     kurs_USD4 = Valuta_kurs.objects.filter(Cur_ID=145,
                                            Cur_OfficialRate=2.1123).update(
         Cur_OfficialRate=1.9999)

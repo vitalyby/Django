@@ -40,19 +40,19 @@ $(document).ready(function () {
     $('#register').click(function (e) {
         e.preventDefault()
         alert("register username='" + $('#username3').val() + "'")
-        $.post("my_exrate/check_user", {'username': $('#username3').val()}, function (response) {
+        $.post("user_check", {'username': $('#username3').val()}, function (response) {
                 alert("register0 username=" + response.user)
                 if (response.user == 'user_exists') {
                     alert("Такое имя " + $('#username3').val() + " уже занято.")
                 }
                 else {
-                    $.post("register_user", {
+                    $.post("user_register", {
                             'username': $('#username3').val(),
                             'email': $('#email3').val(),
                             'password': $('#password3').val()
                         }, function (response) {
                             alert("register_end OK")
-                            document.location.href="/";
+                            document.location.href = "/";
                         }
                     );
                 }
@@ -80,9 +80,5 @@ $(document).ready(function () {
             alert("login2 username='" + $('#username2').val() + "'")
         }
     })
-    $('#logout').click(function (e) {
-        alert("logout username='" + $('#username').val() + "'")
-    })
-
 
 });

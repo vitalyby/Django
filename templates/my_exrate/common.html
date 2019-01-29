@@ -7,27 +7,192 @@
     <script src="/static/js/popper.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/js1.js"></script>
+{#    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>#}
 </head>
 <body>
-
+{% load static %}
 <div class="container-fluid">
     <div class="row" style="text-align: right;">
         <div class="col-12">
-            <div class="card card-body bg-light">
-                {% load static %}
-                {% if user.is_authenticated %}
-                    <a href="logout"><img border="0" alt="Logout: {{ user }}" src="{% static "image/logout.png" %}"></a>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                <a href="/"><img border="0" alt="Django" src="{% static "image/logo.png" %}"></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+                        aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarText">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">Admin</a>
+                        </li>
+                        {#                        <li class="nav-item">#}
+                        {#                            <a class="nav-link" href="#">Pricing</a>#}
+                        {#                        </li>#}
+                    </ul>
+                    <span class="navbar-text">
 
-                {% else %}
-                    <nobr><a href="login"><img border="0" alt="Войти" src="{% static "image/login.png" %}"></a>&nbsp;<a
-                            href="register"><img border="0" alt="Регистрация" src="{% static "image/register.png" %}"></a></nobr>
-                {% endif %}
-            </div>
+                        {% if user.is_authenticated %}
+                            <a href="logout"><img border="0" alt="Logout: {{ user }}"
+                                                  src="{% static "image/logout.png" %}"></a>
+
+                        {% else %}
+                            <nobr><a href="login"><img border="0" alt="Войти" src="{% static "image/login.png" %}"></a>&nbsp;<a
+                                    href="register"><img border="0" alt="Регистрация"
+                                                         src="{% static "image/register.png" %}"></a></nobr>
+                        {% endif %}
+    </span>
+                </div>
+            </nav>
+
         </div>
     </div>
     <div class="row">
         <div class="col-2" style="padding: 0px">
-            <div class="card card-body bg-light">Col_1</div>
+            <div class="card card-body bg-light">
+                {#                ----------------------------------------------#}
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span
+                                        class="glyphicon glyphicon-folder-close">
+                            </span>Главная</a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <span class="glyphicon glyphicon-pencil text-primary"></span><a
+                                                href="/">Home</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="glyphicon glyphicon-flash text-success"></span><a
+                                                href="/admin/">Admin</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="glyphicon glyphicon-file text-info"></span><a
+                                                href="/">BlaBla1</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="glyphicon glyphicon-comment text-success"></span><a
+                                                href="/">BlaBla2</a>
+                                            <span class="badge">42</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><span
+                                        class="glyphicon glyphicon-th">
+                            </span>Курсы с amcharts</a>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <a href="/145/amcharts">USD</a> <span
+                                                class="label label-success">$$$$</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="/298/amcharts">RUB</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="/292/amcharts">EUR</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><span
+                                        class="glyphicon glyphicon-user">
+                            </span>Курсы с matplotlib</a>
+                            </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <a href="/145/matplotlib">USD</a> <span
+                                                class="label label-info">$</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="/298/matplotlib">RUB</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="/292/matplotlib">EUR</a>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><span
+                                        class="glyphicon glyphicon-file">
+                            </span>Регистрация</a>
+                            </h4>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <span class="glyphicon glyphicon-usd"></span><a
+                                                href="login">Sign in</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="glyphicon glyphicon-user"></span><a
+                                                href="logout">LogOut</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <span class="glyphicon glyphicon-tasks"></span><a
+                                                href="register">Register</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {#                ----------------------------------------------#}
+            </div>
         </div>
 
         <div class="col-8" style="padding: 0px">
@@ -40,11 +205,90 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12">
-            <div class="card card-body bg-light"
-                 style="padding: 0px, height: 100%">
+        <div class="col-12 bg-primary">
+            <!-- Footer -->
+            <footer class="page-footer font-small blue pt-4">
 
-            </div>
+                <!-- Footer Links -->
+                <div class="container-fluid text-center text-md-left">
+
+                    <!-- Grid row -->
+                    <div class="row">
+
+                        <!-- Grid column -->
+                        <div class="col-md-6 mt-md-0 mt-3">
+
+                            <!-- Content -->
+                            <h5 class="text-uppercase">Finish</h5>
+                            <p>BlaBlaBla</p>
+
+                        </div>
+                        <!-- Grid column -->
+
+                        <hr class="clearfix w-100 d-md-none pb-3">
+
+                        <!-- Grid column -->
+                        <div class="col-md-3 mb-md-0 mb-3">
+
+                            <!-- Links -->
+                            <h5 class="text-uppercase">Links</h5>
+
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a href="#!" class="text-dark">Link 1</a>
+                                </li>
+                                <li>
+                                    <a href="#!" class="text-dark">Link 2</a>
+                                </li>
+                                <li>
+                                    <a href="#!" class="text-dark">Link 3</a>
+                                </li>
+                                <li>
+                                    <a href="#!" class="text-dark">Link 4</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <!-- Grid column -->
+
+                        <!-- Grid column -->
+                        <div class="col-md-3 mb-md-0 mb-3">
+
+                            <!-- Links -->
+                            <h5 class="text-uppercase">Links</h5>
+
+                            <ul class="list-unstyled">
+                                <li>
+                                    <a href="#!" class="text-dark">Link 1</a>
+                                </li>
+                                <li>
+                                    <a href="#!" class="text-dark">Link 2</a>
+                                </li>
+                                <li>
+                                    <a href="#!" class="text-dark">Link 3</a>
+                                </li>
+                                <li>
+                                    <a href="#!" class="text-dark">Link 4</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <!-- Grid column -->
+
+                    </div>
+                    <!-- Grid row -->
+
+                </div>
+                <!-- Footer Links -->
+
+                <!-- Copyright -->
+                <div class="footer-copyright text-center py-3">© 2018 Copyright:
+                    <a href="/"> Django progect</a>
+                </div>
+                <!-- Copyright -->
+
+            </footer>
+            <!-- Footer -->
         </div>
     </div>
 </div>
