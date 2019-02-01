@@ -12,7 +12,7 @@ now = datetime.datetime.now()
 
 
 def index(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_staff:
         username = request.user
         url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
         spisok_kursov = requests.get(url).json()
@@ -51,7 +51,7 @@ def index(request):
                                           'amchart', 'matplotlib'])
     else:
         username = 'Аноним'
-        table_rates = 'Вы не зарегистрированы'
+        table_rates = 'Вы не зарегистрированы или не имеете прав'
 
     return render_to_response('my_exrate/index.html',
                               {'table': table_rates,
@@ -98,6 +98,7 @@ def user_check(request):
 def amcharts(request, Cur_ID):
     chartData = ""
     if request.user.is_authenticated:
+        # if request.user.is_authenticated and request.user.view('my_exrate.valuta'):
         for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
             # for val_1 in Valuta.objects.all():
             x = []
@@ -204,3 +205,12 @@ def vote(request, question_id):
 def detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     return render(request, 'my_exrate/detail.html', {'question': question})
+
+
+def test_fn1(ls, divisor):
+    result = []
+    idx = 0
+    while idx < len(ls):
+        result.append(ls[idx] / divisor)
+        idx = idx + 1
+    return result
