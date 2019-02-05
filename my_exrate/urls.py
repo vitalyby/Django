@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^(?P<question_id>[0-9]+)/results/$', views.results, name='results'),
     url(r'^(?P<question_id>[0-9]+)/vote/$', views.vote, name='vote'),
     url(r'^(?P<Cur_ID>[0-9]+)/matplotlib', views.matplotlib, name='matplotlib'),
+    url(r'^(?P<Cur_ID>[0-9]+)/rate_by_week', views.rate_by_week, name='rate_by_week'),
     # url(r'^my_exrate/amcharts/$', views.amcharts, name='amcharts'),
     url(r'^(?P<Cur_ID>[0-9]+)/amcharts$', views.amcharts, name='amcharts'),
     # url(r'^my_exrate/csv_file/$', views.csv_file, name='csv_file'),

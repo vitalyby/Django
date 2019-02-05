@@ -3,13 +3,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render, render_to_response
+from django.utils.translation import ugettext as _, activate
 import requests
+import json
 import pandas as pd
-import datetime
+import datetime as DT
 import matplotlib.pyplot as plt
 import re
 
-now = datetime.datetime.now()
+now = DT.datetime.now()
+today = DT.date.today()
+week_ago = today - DT.timedelta(days=7)
 
 
 def index(request):
@@ -188,6 +192,29 @@ def rate_update(request):
                                            Cur_OfficialRate=2.1123).update(
         Cur_OfficialRate=1.9999)
     return HttpResponse(kurs_USD4)
+
+
+def rate_by_week(request, Cur_ID):
+    if request.user.is_authenticated and request.user.is_staff:
+        username = request.user
+        url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/' + str(Cur_ID) + '?startDate=' + str(
+            week_ago) + '&endDate=' + str(
+            today)
+        response = requests.get(url).json()
+        # чтобы df.to_html не обрезал длинные строки до 50 символов
+        pd.set_option('display.max_colwidth', -1)
+        df = pd.DataFrame(response)
+        str_3 = df["Cur_OfficialRate"].mean()
+        df = df.append({'Cur_ID': '---', 'Cur_OfficialRate': str_3, 'Date': '---'}, ignore_index=True)
+
+        table_rates = df.to_html(escape=False, index=False, classes='table table-striped')
+    else:
+        username = 'Аноним'
+        table_rates = 'Вы не зарегистрированы или не имеете прав'
+
+    return render_to_response('my_exrate/rate_by_week.html',
+                              {'table': table_rates,
+                               'user': username, 'login_form': request.user.is_authenticated})
 
 
 def questions(request):

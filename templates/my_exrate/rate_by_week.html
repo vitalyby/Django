@@ -1,0 +1,10 @@
+{% extends "my_exrate/common.html" %}
+
+{% block common_title %}
+    Таблица курсов за неделю
+{% endblock %}
+
+{% block common_body %}
+    <h3>Таблица курсов за неделю</h3>
+    {{ table|safe }}
+{% endblock %}
