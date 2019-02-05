@@ -45,6 +45,9 @@ $(document).ready(function () {
                 if (response.user == 'user_exists') {
                     alert("Такое имя " + $('#username3').val() + " уже занято.")
                 }
+                else if (response.user == 'user_not_check') {
+                    alert("Выберите другое username.")
+                }
                 else {
                     $.post("user_register", {
                             'username': $('#username3').val(),

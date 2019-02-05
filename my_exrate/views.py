@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
+import re
 
 now = datetime.datetime.now()
 
@@ -90,6 +91,8 @@ def user_check(request):
     usr = 'ok'
     if User.objects.filter(username=request.POST.get('username')).exists():
         usr = 'user_exists'
+    if re.search('^[a-z0-9_-]{3,16}$', request.POST.get('username')) == None:
+        usr = 'user_not_check'
     response = {'user': usr}
     return JsonResponse(response)
 
