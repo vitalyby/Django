@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^login$', views.user_login, name='user_login'),
     url(r'^logout$', views.user_logout, name='user_logout'),
     url(r'^register$', views.register, name='register'),
+    url(r'^(?P<lang_code>[a-z]{2})$', views.lang_change, name='lang_change'),
     url(r'^user_register$', views.user_register, name='user_register'),
     url(r'^user_check$', views.user_check, name='user_check'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='/static/image/favicon.ico')),

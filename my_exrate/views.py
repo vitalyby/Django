@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render, render_to_response
-from django.utils.translation import ugettext as _, activate
+from django.utils.translation import ugettext_lazy as _, activate
 import requests
 import json
 import pandas as pd
@@ -244,3 +244,9 @@ def test_fn1(ls, divisor):
         result.append(ls[idx] / divisor)
         idx = idx + 1
     return result
+
+
+def lang_change(request, lang_code):
+    activate(lang_code)
+    print(lang_code)
+    return HttpResponseRedirect('./')
