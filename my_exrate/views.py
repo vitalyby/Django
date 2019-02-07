@@ -3,9 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render, render_to_response
-from django.utils.translation import ugettext_lazy as _, activate
+from django.utils import translation
+from django.utils.translation import ugettext as _
 import requests
-import json
 import pandas as pd
 import datetime as DT
 import matplotlib.pyplot as plt
@@ -137,7 +137,7 @@ def matplotlib(request, Cur_ID):
         x = []
         y = []
         for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
-            x.append(datetime.datetime(year=rate_1.Date.year, month=rate_1.Date.month, day=rate_1.Date.day))
+            x.append(DT.datetime(year=rate_1.Date.year, month=rate_1.Date.month, day=rate_1.Date.day))
             y.append(rate_1.Cur_OfficialRate)
         # x - Date y - Cur_OfficialRate label - Cur_Abbreviation
         ax.plot(x, y, label=val_1.Cur_Abbreviation)
@@ -247,6 +247,7 @@ def test_fn1(ls, divisor):
 
 
 def lang_change(request, lang_code):
-    activate(lang_code)
-    print(lang_code)
-    return HttpResponseRedirect('./')
+    translation.activate(lang_code)
+    my_string = _("Главная")
+    print(my_string)
+    return render(request,'my_exrate/index.html')
