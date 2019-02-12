@@ -2,7 +2,6 @@ from django.test import TestCase
 import unittest
 from my_exrate.views import test_fn1
 
-
 # Create your tests here.
 class Tests(unittest.TestCase):
     def test_1(self):

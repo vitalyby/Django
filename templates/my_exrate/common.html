@@ -50,12 +50,12 @@
                     <span class="navbar-text">
 
                         {% if user.is_authenticated %}
-                            <a href="logout"><img border="0" alt="Logout: {{ user }}"
+                            <a href="/logout"><img border="0" alt="Logout: {{ user }}"
                                                   src="{% static "image/logout.png" %}"></a>
 
                         {% else %}
-                            <nobr><a href="login"><img border="0" alt="Войти" src="{% static "image/login.png" %}"></a>&nbsp;<a
-                                    href="register"><img border="0" alt="Регистрация"
+                            <nobr><a href="/login"><img border="0" alt="Войти" src="{% static "image/login.png" %}"></a>&nbsp;<a
+                                    href="/register"><img border="0" alt="Регистрация"
                                                          src="{% static "image/register.png" %}"></a></nobr>
                         {% endif %}
 
@@ -187,19 +187,19 @@
                                     <tr>
                                         <td>
                                             <span class="glyphicon glyphicon-usd"></span><a
-                                                href="login">Sign in</a>
+                                                href="/login">Sign in</a>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <span class="glyphicon glyphicon-user"></span><a
-                                                href="logout">LogOut</a>
+                                                href="/logout">LogOut</a>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <span class="glyphicon glyphicon-tasks"></span><a
-                                                href="register">Register</a>
+                                                href="/register">Register</a>
                                         </td>
                                     </tr>
                                 </table>

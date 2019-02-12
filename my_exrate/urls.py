@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^my_exrate/rate_insert/$', views.rate_insert, name='rate_insert'),
     url(r'^my_exrate/rate_delete/$', views.rate_delete, name='rate_delete'),
     url(r'^my_exrate/rate_update/$', views.rate_update, name='rate_update'),
+    url(r'^server_upd$', views.server_upd, name='server_upd'),
 ]

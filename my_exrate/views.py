@@ -4,12 +4,15 @@ from django.contrib.auth.models import User
 from .models import Question, Valuta_kurs, Valuta
 from django.shortcuts import get_object_or_404, render, render_to_response
 from django.utils import translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import LANGUAGE_SESSION_KEY, ugettext as _
 import requests
 import pandas as pd
 import datetime as DT
 import matplotlib.pyplot as plt
 import re
+
+# import pickle
+# from pymemcache import Client
 
 now = DT.datetime.now()
 today = DT.date.today()
@@ -20,40 +23,50 @@ def index(request):
     if request.user.is_authenticated and request.user.is_staff:
         username = request.user
         url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
-        spisok_kursov = requests.get(url).json()
         # чтобы df.to_html не обрезал длинные строки до 50 символов
-        pd.set_option('display.max_colwidth', -1)
-        df = pd.DataFrame(spisok_kursov)
-        # df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
-        df1 = pd.DataFrame(columns=['amchart'])
-        df2 = pd.DataFrame(columns=['matplotlib'])
-        for row_k in spisok_kursov:
-            str_1 = '<a href="./' + str(
-                row_k[
-                    'Cur_ID']) + '/amcharts" target="_blank" id="but_am" class ="badge badge-primary" style="width:50px">' + str(
-                row_k['Cur_Abbreviation']) + '</a>'
-            df1 = df1.append({'amchart': str_1}, ignore_index=True)
-            str_2 = '<a href="./' + str(
-                row_k[
-                    'Cur_ID']) + '/matplotlib" target="_blank" id="but_mat" class ="badge badge-primary" style="width:50px">' + str(
-                row_k['Cur_Abbreviation']) + '</a>'
-            df2 = df2.append({'matplotlib': str_2}, ignore_index=True)
-            if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
-                kurs = Valuta(Cur_ID=row_k['Cur_ID'],
-                              Cur_Abbreviation=row_k['Cur_Abbreviation'],
-                              Cur_Scale=row_k['Cur_Scale'],
-                              Cur_Name=row_k['Cur_Name'])
-                kurs.save()
-            if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
-                                          Date=row_k['Date']).exists() == False:
-                val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
-                                  Cur_OfficialRate=row_k['Cur_OfficialRate'])
-                val.save()
-        df['amchart'] = df1
-        df['matplotlib'] = df2
-        table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
-                                 columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate', 'Cur_Scale',
-                                          'amchart', 'matplotlib'])
+        try:
+            spisok_kursov = requests.get(url).json()
+            pd.set_option('display.max_colwidth', -1)
+            df = pd.DataFrame(spisok_kursov)
+            # df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
+            df1 = pd.DataFrame(columns=['amchart'])
+            df2 = pd.DataFrame(columns=['matplotlib'])
+            for row_k in spisok_kursov:
+                str_1 = '<a href="./' + str(
+                    row_k[
+                        'Cur_ID']) + '/amcharts" target="_blank" id="but_am" class ="badge badge-primary" style="width:50px">' + str(
+                    row_k['Cur_Abbreviation']) + '</a>'
+                df1 = df1.append({'amchart': str_1}, ignore_index=True)
+                str_2 = '<a href="./' + str(
+                    row_k[
+                        'Cur_ID']) + '/matplotlib" target="_blank" id="but_mat" class ="badge badge-primary" style="width:50px">' + str(
+                    row_k['Cur_Abbreviation']) + '</a>'
+                df2 = df2.append({'matplotlib': str_2}, ignore_index=True)
+                if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
+                    kurs = Valuta(Cur_ID=row_k['Cur_ID'],
+                                  Cur_Abbreviation=row_k['Cur_Abbreviation'],
+                                  Cur_Scale=row_k['Cur_Scale'],
+                                  Cur_Name=row_k['Cur_Name'])
+                    kurs.save()
+                if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
+                                              Date=row_k['Date']).exists() == False:
+                    val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
+                                      Cur_OfficialRate=row_k['Cur_OfficialRate'])
+                    val.save()
+            df['amchart'] = df1
+            df['matplotlib'] = df2
+            if request.LANGUAGE_CODE == 'ru':
+                table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
+                                         columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate',
+                                                  'Cur_Scale',
+                                                  'amchart', 'matplotlib'])
+            else:
+                table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
+                                         columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_OfficialRate',
+                                                  'Cur_Scale',
+                                                  'amchart', 'matplotlib'])
+        except:
+            table_rates = '<table border="1" class="dataframe table table-striped">  <thead>    <tr style="text-align: right;">      <th>Cur_ID</th>      <th>Cur_Abbreviation</th>      <th>Cur_Name</th>      <th>Cur_OfficialRate</th>      <th>Cur_Scale</th>      <th>amchart</th>      <th>matplotlib</th>    </tr>  </thead></table>'
     else:
         username = 'Аноним'
         table_rates = 'Вы не зарегистрированы или не имеете прав'
@@ -197,6 +210,9 @@ def rate_update(request):
 def rate_by_week(request, Cur_ID):
     if request.user.is_authenticated and request.user.is_staff:
         username = request.user
+        # client = Client(('localhost', 11211))
+        # table_rates = client.get('table_rates')
+        # if table_rates is None:
         url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/' + str(Cur_ID) + '?startDate=' + str(
             week_ago) + '&endDate=' + str(
             today)
@@ -208,6 +224,10 @@ def rate_by_week(request, Cur_ID):
         df = df.append({'Cur_ID': '---', 'Cur_OfficialRate': str_3, 'Date': '---'}, ignore_index=True)
 
         table_rates = df.to_html(escape=False, index=False, classes='table table-striped')
+    #     client.set('table_rates', pickle.dumps(table_rates), expire=60)
+    # else:
+    #     table_rates = pickle.loads(table_rates)
+
     else:
         username = 'Аноним'
         table_rates = 'Вы не зарегистрированы или не имеете прав'
@@ -248,6 +268,20 @@ def test_fn1(ls, divisor):
 
 def lang_change(request, lang_code):
     translation.activate(lang_code)
+    request.session[LANGUAGE_SESSION_KEY] = lang_code
     my_string = _("Главная")
     print(my_string)
-    return render(request,'my_exrate/index.html')
+    # return render(request, 'my_exrate/index.html')
+    return HttpResponseRedirect('/')
+
+
+def server_upd(request):
+    kurs_upd = Valuta_kurs.objects.filter(Cur_ID=request.POST.get('Cur_ID'),
+                                          Date=request.POST.get('Date')).update(
+        Cur_OfficialRate=request.POST.get('Cur_OfficialRate'))
+    print('server_upd')
+
+    return JsonResponse({'status': 'OK'})
+
+
+
