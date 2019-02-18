@@ -1,0 +1,15 @@
+{% extends "my_exrate/common.html" %}
+
+{% block common_title %}
+    Курс {{ header }}
+{% endblock %}
+
+{% block common_head %}
+{% endblock %}
+
+{% load static %}
+{% block common_body %}
+{#    <h3>Курс {{ header }}</h3>#}
+    <!-- HTML -->
+    <img class="card-img-top" src="{% static "image/foo.png" %}" alt="Курс">
+{% endblock %}

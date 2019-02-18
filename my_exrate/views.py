@@ -23,9 +23,9 @@ def index(request):
     if request.user.is_authenticated and request.user.is_staff:
         username = request.user
         url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
-        # чтобы df.to_html не обрезал длинные строки до 50 символов
         try:
             spisok_kursov = requests.get(url).json()
+            # чтобы df.to_html не обрезал длинные строки до 50 символов
             pd.set_option('display.max_colwidth', -1)
             df = pd.DataFrame(spisok_kursov)
             # df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
@@ -142,31 +142,34 @@ def amcharts(request, Cur_ID):
 
 # построить график курсов  -- matplotlib
 def matplotlib(request, Cur_ID):
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
-        ax.set_title(val_1.Cur_Name)
-        # for val_1 in Valuta.objects.all():
-        x = []
-        y = []
-        for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
-            x.append(DT.datetime(year=rate_1.Date.year, month=rate_1.Date.month, day=rate_1.Date.day))
-            y.append(rate_1.Cur_OfficialRate)
-        # x - Date y - Cur_OfficialRate label - Cur_Abbreviation
-        ax.plot(x, y, label=val_1.Cur_Abbreviation)
-        ax.legend(loc='lower right')  # так же указываем положение легенды
-    for label in ax.xaxis.get_ticklabels():
-        # цвет подписи деленений оси OX
-        label.set_color('blue')
-        # поворот подписей деленений оси OX
-        label.set_rotation(30)
-        # размер шрифта подписей делений оси OX
-        label.set_fontsize(8)
-    plt.savefig('foo.png')
-    plt.close()
-    image_data = open("foo.png", "rb").read()
+    if request.user.is_authenticated:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
+            ax.set_title(val_1.Cur_Name)
+            # for val_1 in Valuta.objects.all():
+            x = []
+            y = []
+            for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
+                x.append(DT.datetime(year=rate_1.Date.year, month=rate_1.Date.month, day=rate_1.Date.day))
+                y.append(rate_1.Cur_OfficialRate)
+            # x - Date y - Cur_OfficialRate label - Cur_Abbreviation
+            ax.plot(x, y, label=val_1.Cur_Abbreviation)
+            ax.legend(loc='lower right')  # так же указываем положение легенды
+        for label in ax.xaxis.get_ticklabels():
+            # цвет подписи деленений оси OX
+            label.set_color('blue')
+            # поворот подписей деленений оси OX
+            label.set_rotation(30)
+            # размер шрифта подписей делений оси OX
+            label.set_fontsize(8)
+        plt.savefig('my_exrate/static/image/foo.png')
+        plt.close()
+        # image_data = open("my_exrate/static/image/foo.png", "rb").read()
+    else:
+        return render_to_response('my_exrate/matplotlib.html', {})
 
-    return HttpResponse(image_data, content_type="image/png")
+    return render(request, 'my_exrate/matplotlib.html')
 
 
 # скачать файл csv
@@ -210,6 +213,7 @@ def rate_update(request):
 def rate_by_week(request, Cur_ID):
     if request.user.is_authenticated and request.user.is_staff:
         username = request.user
+        # кэширование
         # client = Client(('localhost', 11211))
         # table_rates = client.get('table_rates')
         # if table_rates is None:
@@ -224,6 +228,7 @@ def rate_by_week(request, Cur_ID):
         df = df.append({'Cur_ID': '---', 'Cur_OfficialRate': str_3, 'Date': '---'}, ignore_index=True)
 
         table_rates = df.to_html(escape=False, index=False, classes='table table-striped')
+    # кэширование
     #     client.set('table_rates', pickle.dumps(table_rates), expire=60)
     # else:
     #     table_rates = pickle.loads(table_rates)
@@ -276,12 +281,15 @@ def lang_change(request, lang_code):
 
 
 def server_upd(request):
-    kurs_upd = Valuta_kurs.objects.filter(Cur_ID=request.POST.get('Cur_ID'),
-                                          Date=request.POST.get('Date')).update(
-        Cur_OfficialRate=request.POST.get('Cur_OfficialRate'))
-    print('server_upd')
+    if request.POST.get('Cur_ID') is None or request.POST.get('Date') is None or request.POST.get(
+            'Cur_OfficialRate') is None:
+        status_upd = 'No input data'
+    else:
+        kurs_upd = Valuta_kurs.objects.filter(Cur_ID=request.POST.get('Cur_ID'),
+                                              Date=request.POST.get('Date')).update(
+            Cur_OfficialRate=request.POST.get('Cur_OfficialRate'))
+        status_upd = 'OK'
+        print(str(kurs_upd))
+    print(status_upd)
 
-    return JsonResponse({'status': 'OK'})
-
-
-
+    return JsonResponse({'status': status_upd})

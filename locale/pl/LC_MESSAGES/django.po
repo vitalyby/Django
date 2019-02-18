@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-07 15:20+0300\n"
+"POT-Creation-Date: 2019-02-18 13:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,19 +22,28 @@ msgstr ""
 
 #: .\Django\settings.py:112
 msgid "Русский"
-msgstr ""
+msgstr "Rosyjski"
 
 #: .\Django\settings.py:113
 msgid "English"
-msgstr ""
+msgstr "Angielski"
 
 #: .\Django\settings.py:114
 msgid "Polish"
-msgstr ""
+msgstr "polski"
 
-#: .\my_exrate\views.py:252 .\templates\my_exrate\common.html:78
+#: .\my_exrate\views.py:277 .\templates\my_exrate\common.html:78
+#: .\templates\my_exrate\index.html:5
 msgid "Главная"
 msgstr "główny"
+
+#: .\templates\my_exrate\common.html:26
+msgid "Домой"
+msgstr "Do domu"
+
+#: .\templates\my_exrate\common.html:29
+msgid "Админка"
+msgstr "Administracyjny"
 
 #: .\templates\my_exrate\common.html:99
 msgid "Таблица USD за неделю"
@@ -51,6 +60,50 @@ msgstr "Kursy z matplotlib"
 #: .\templates\my_exrate\common.html:181
 msgid "Регистрация"
 msgstr "Rejestracja"
+
+#: .\templates\my_exrate\common.html:243
+msgid "Проект Джанго"
+msgstr "Projekt Django"
+
+#: .\templates\my_exrate\common.html:255
+msgid "Ссылки"
+msgstr "Linki"
+
+#: .\templates\my_exrate\common.html:259
+msgid "Ссылка 1"
+msgstr "odniesienie 1"
+
+#: .\templates\my_exrate\common.html:262
+msgid "Ссылка 2"
+msgstr "odniesienie 2"
+
+#: .\templates\my_exrate\common.html:265
+msgid "Ссылка 3"
+msgstr "odniesienie 3"
+
+#: .\templates\my_exrate\common.html:268
+msgid "Ссылка 4"
+msgstr "odniesienie 4"
+
+#: .\templates\my_exrate\common.html:279
+msgid "Закладки"
+msgstr "Zakładki"
+
+#: .\templates\my_exrate\common.html:283
+msgid "Закладка 1"
+msgstr "Zakładka 1"
+
+#: .\templates\my_exrate\common.html:286
+msgid "Закладка 2"
+msgstr "Zakładka 2"
+
+#: .\templates\my_exrate\common.html:289
+msgid "Закладка 3"
+msgstr "Zakładka 3"
+
+#: .\templates\my_exrate\common.html:292
+msgid "Закладка 4"
+msgstr "Zakładka 4"
 
 #: .\venv\Lib\site-packages\django\contrib\messages\apps.py:7
 msgid "Messages"
