@@ -203,7 +203,7 @@ def plotly(request, Cur_ID):
                 x.append(DT.datetime(year=rate_1.Date.year, month=rate_1.Date.month, day=rate_1.Date.day))
                 y.append(rate_1.Cur_OfficialRate)
             data = [go.Scatter(x=x, y=y)]
-            py.iplot(data, filename='plotly_chart', sharing='public', auto_open=False)
+            py.plot(data, filename='plotly_chart', sharing='public', auto_open=False)
     else:
         return render_to_response('my_exrate/plotly.html', {})
     return render(request, 'my_exrate/plotly.html', {'header': val_1.Cur_Name})
