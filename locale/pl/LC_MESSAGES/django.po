@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 13:59+0300\n"
+"POT-Creation-Date: 2019-02-19 21:00+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,7 +32,7 @@ msgstr "Angielski"
 msgid "Polish"
 msgstr "polski"
 
-#: .\my_exrate\views.py:277 .\templates\my_exrate\common.html:78
+#: .\my_exrate\views.py:314 .\templates\my_exrate\common.html:78
 #: .\templates\my_exrate\index.html:5
 msgid "Главная"
 msgstr "główny"
@@ -58,50 +58,54 @@ msgid "Курсы с matplotlib"
 msgstr "Kursy z matplotlib"
 
 #: .\templates\my_exrate\common.html:181
+msgid "Курсы с plotly"
+msgstr "Kursy z plotly"
+
+#: .\templates\my_exrate\common.html:213
 msgid "Регистрация"
 msgstr "Rejestracja"
 
-#: .\templates\my_exrate\common.html:243
+#: .\templates\my_exrate\common.html:281
 msgid "Проект Джанго"
 msgstr "Projekt Django"
 
-#: .\templates\my_exrate\common.html:255
+#: .\templates\my_exrate\common.html:293
 msgid "Ссылки"
 msgstr "Linki"
 
-#: .\templates\my_exrate\common.html:259
+#: .\templates\my_exrate\common.html:297
 msgid "Ссылка 1"
 msgstr "odniesienie 1"
 
-#: .\templates\my_exrate\common.html:262
+#: .\templates\my_exrate\common.html:300
 msgid "Ссылка 2"
 msgstr "odniesienie 2"
 
-#: .\templates\my_exrate\common.html:265
+#: .\templates\my_exrate\common.html:303
 msgid "Ссылка 3"
 msgstr "odniesienie 3"
 
-#: .\templates\my_exrate\common.html:268
+#: .\templates\my_exrate\common.html:306
 msgid "Ссылка 4"
 msgstr "odniesienie 4"
 
-#: .\templates\my_exrate\common.html:279
+#: .\templates\my_exrate\common.html:317
 msgid "Закладки"
 msgstr "Zakładki"
 
-#: .\templates\my_exrate\common.html:283
+#: .\templates\my_exrate\common.html:321
 msgid "Закладка 1"
 msgstr "Zakładka 1"
 
-#: .\templates\my_exrate\common.html:286
+#: .\templates\my_exrate\common.html:324
 msgid "Закладка 2"
 msgstr "Zakładka 2"
 
-#: .\templates\my_exrate\common.html:289
+#: .\templates\my_exrate\common.html:327
 msgid "Закладка 3"
 msgstr "Zakładka 3"
 
-#: .\templates\my_exrate\common.html:292
+#: .\templates\my_exrate\common.html:330
 msgid "Закладка 4"
 msgstr "Zakładka 4"
 
