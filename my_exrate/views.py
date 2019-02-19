@@ -10,6 +10,9 @@ import pandas as pd
 import datetime as DT
 import matplotlib.pyplot as plt
 import re
+import plotly.plotly as py
+import plotly.graph_objs as go
+import plotly
 
 # import pickle
 # from pymemcache import Client
@@ -28,9 +31,10 @@ def index(request):
             # чтобы df.to_html не обрезал длинные строки до 50 символов
             pd.set_option('display.max_colwidth', -1)
             df = pd.DataFrame(spisok_kursov)
-            # df.to_csv('file_rates', encoding='utf-8', index=False, index_label=True)
+            # df.to_csv('file_rates.csv', encoding='utf-8', index=False, index_label=True)
             df1 = pd.DataFrame(columns=['amchart'])
             df2 = pd.DataFrame(columns=['matplotlib'])
+            df3 = pd.DataFrame(columns=['plotly'])
             for row_k in spisok_kursov:
                 str_1 = '<a href="./' + str(
                     row_k[
@@ -42,6 +46,11 @@ def index(request):
                         'Cur_ID']) + '/matplotlib" target="_blank" id="but_mat" class ="badge badge-primary" style="width:50px">' + str(
                     row_k['Cur_Abbreviation']) + '</a>'
                 df2 = df2.append({'matplotlib': str_2}, ignore_index=True)
+                str_3 = '<a href="./' + str(
+                    row_k[
+                        'Cur_ID']) + '/plotly" target="_blank" id="but_plt" class ="badge badge-primary" style="width:50px">' + str(
+                    row_k['Cur_Abbreviation']) + '</a>'
+                df3 = df3.append({'plotly': str_3}, ignore_index=True)
                 if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
                     kurs = Valuta(Cur_ID=row_k['Cur_ID'],
                                   Cur_Abbreviation=row_k['Cur_Abbreviation'],
@@ -55,16 +64,17 @@ def index(request):
                     val.save()
             df['amchart'] = df1
             df['matplotlib'] = df2
+            df['plotly'] = df3
             if request.LANGUAGE_CODE == 'ru':
                 table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
                                          columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate',
                                                   'Cur_Scale',
-                                                  'amchart', 'matplotlib'])
+                                                  'amchart', 'matplotlib', 'plotly'])
             else:
                 table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
                                          columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_OfficialRate',
                                                   'Cur_Scale',
-                                                  'amchart', 'matplotlib'])
+                                                  'amchart', 'matplotlib', 'plotly'])
         except:
             table_rates = '<table border="1" class="dataframe table table-striped">  <thead>    <tr style="text-align: right;">      <th>Cur_ID</th>      <th>Cur_Abbreviation</th>      <th>Cur_Name</th>      <th>Cur_OfficialRate</th>      <th>Cur_Scale</th>      <th>amchart</th>      <th>matplotlib</th>    </tr>  </thead></table>'
     else:
@@ -106,11 +116,19 @@ def user_register(request):
 
 def user_check(request):
     usr = 'ok'
-    if User.objects.filter(username=request.POST.get('username')).exists():
-        usr = 'user_exists'
+    eml = 'ok'
     if re.search('^[a-z0-9_-]{3,16}$', request.POST.get('username')) == None:
         usr = 'user_not_check'
-    response = {'user': usr}
+    if User.objects.filter(username=request.POST.get('username')).exists():
+        usr = 'user_exists'
+
+    if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z0-9]*$", request.POST.get('email')):
+        eml = 'email_not_check'
+    if User.objects.filter(email=request.POST.get('email')).exists():
+        eml = 'email_exists'
+
+    response = {'user': usr, 'email': eml}
+
     return JsonResponse(response)
 
 
@@ -170,6 +188,25 @@ def matplotlib(request, Cur_ID):
         return render_to_response('my_exrate/matplotlib.html', {})
 
     return render(request, 'my_exrate/matplotlib.html')
+
+
+# построить график курсов  -- plotly
+# import plotly
+# plotly.tools.set_credentials_file(username='vitaly.by', api_key='T13Oh0V6SNXmdJK7rouH')
+def plotly(request, Cur_ID):
+    chartData = ""
+    if request.user.is_authenticated:
+        for val_1 in Valuta.objects.filter(Cur_ID=Cur_ID):
+            x = []
+            y = []
+            for rate_1 in Valuta_kurs.objects.filter(Cur_ID=val_1.Cur_ID):
+                x.append(DT.datetime(year=rate_1.Date.year, month=rate_1.Date.month, day=rate_1.Date.day))
+                y.append(rate_1.Cur_OfficialRate)
+            data = [go.Scatter(x=x, y=y)]
+            py.iplot(data, filename='plotly_chart', sharing='public', auto_open=False)
+    else:
+        return render_to_response('my_exrate/plotly.html', {})
+    return render(request, 'my_exrate/plotly.html', {'header': val_1.Cur_Name})
 
 
 # скачать файл csv

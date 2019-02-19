@@ -1,0 +1,19 @@
+{% extends "my_exrate/common.html" %}
+
+{% block common_title %}
+    Курс {{ header }}
+{% endblock %}
+
+{% block common_head %}
+{% endblock %}
+
+{% load static %}
+{% block common_body %}
+    <h3>Курс {{ header }}</h3>
+    <!-- HTML -->
+
+    <div id="map-container" style="height: 100%;width: 100%;">
+        <iframe name="iframe1" src="https://plot.ly/~vitaly.by/1/#/" style="height: 100%;width: 100%;"></iframe>
+    </div>
+
+{% endblock %}

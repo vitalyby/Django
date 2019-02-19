@@ -39,14 +39,20 @@ $(document).ready(function () {
     //обработка кнопки регистрации
     $('#register').click(function (e) {
         e.preventDefault()
-        alert("register username='" + $('#username3').val() + "'")
-        $.post("user_check", {'username': $('#username3').val()}, function (response) {
-                alert("register0 username=" + response.user)
+        alert("register username='" + $('#username3').val() + "' email: " + $('#email3').val())
+        $.post("user_check", {'username': $('#username3').val(), 'email': $('#email3').val()}, function (response) {
+                alert("register0 username=" + response.user + " email=" + response.email)
                 if (response.user == 'user_exists') {
                     alert("Такое имя " + $('#username3').val() + " уже занято.")
                 }
                 else if (response.user == 'user_not_check') {
                     alert("Выберите другое username.")
+                }
+                else if (response.email == 'email_not_check') {
+                    alert("Проверьте правильность ввода email.")
+                }
+                else if (response.email == 'email_exists') {
+                    alert("Такой email уже зарегистрирован.")
                 }
                 else {
                     $.post("user_register", {

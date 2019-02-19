@@ -173,6 +173,38 @@
                             </div>
                         </div>
                     </div>
+                   <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix"><span
+                                        class="glyphicon glyphicon-user">
+                            </span>{% trans "Курсы с plotly" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapseSix" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                            <a href="/145/plotly">USD</a> <span
+                                                class="label label-info">$</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="/298/plotly">RUB</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="/292/plotly">EUR</a>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
@@ -216,13 +248,19 @@
             </div>
         </div>
         {#  ----- правая боковая панель                ----------------------------------------------#}
-        <div class="col-2" style="padding: 0px">
-            <div class="card card-body bg-ligth">
-                <div class="card" style="width: 100%;">
-                    <img class="card-img-top" src="{% static "image/foo.png" %}" alt="Курс">
+        {% if user.is_authenticated %}
+            <div class="col-2" style="padding: 0px">
+                <div class="card card-body bg-ligth">
+                    <div class="card" style="width: 100%;">
+                        <img class="card-img-top" src="{% static "image/foo.png" %}" alt="Курс">
+                    </div>
                 </div>
             </div>
-        </div>
+
+        {% else %}
+            <nobr><a href="/login"><img border="0" alt="Войти" src="{% static "image/login.png" %}"></a></nobr>
+        {% endif %}
+
         {#  ----- end правая боковая панель                ----------------------------------------------#}
     </div>
     <div class="row">
