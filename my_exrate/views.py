@@ -68,12 +68,10 @@ def index(request):
             if request.LANGUAGE_CODE == 'ru':
                 table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
                                          columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate',
-                                                  'Cur_Scale',
                                                   'amchart', 'matplotlib', 'plotly'])
             else:
                 table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
                                          columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_OfficialRate',
-                                                  'Cur_Scale',
                                                   'amchart', 'matplotlib', 'plotly'])
         except:
             table_rates = '<table border="1" class="dataframe table table-striped">  <thead>    <tr style="text-align: right;">      <th>Cur_ID</th>      <th>Cur_Abbreviation</th>      <th>Cur_Name</th>      <th>Cur_OfficialRate</th>      <th>Cur_Scale</th>      <th>amchart</th>      <th>matplotlib</th>    </tr>  </thead></table>'
@@ -217,6 +215,10 @@ def csv_file(request):
     writer = csv.writer(response)
     writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
     writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"'])
+
+
+    # df = pd.DataFrame()
+    # pd.read_csv("data.csv")
 
     return response
 
