@@ -25,65 +25,10 @@ week_ago = today - DT.timedelta(days=7)
 def index(request):
     if request.user.is_authenticated and request.user.is_staff:
         username = request.user
-        url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
-        try:
-            spisok_kursov = requests.get(url).json()
-            # чтобы df.to_html не обрезал длинные строки до 50 символов
-            pd.set_option('display.max_colwidth', -1)
-            df = pd.DataFrame(spisok_kursov)
-            # df.to_csv('file_rates.csv', encoding='utf-8', index=False, index_label=True)
-            df1 = pd.DataFrame(columns=['amchart'])
-            df2 = pd.DataFrame(columns=['matplotlib'])
-            df3 = pd.DataFrame(columns=['plotly'])
-            for row_k in spisok_kursov:
-                str_1 = '<a href="./' + str(
-                    row_k[
-                        'Cur_ID']) + '/amcharts" target="_blank" id="but_am" class ="badge badge-primary" style="width:50px">' + str(
-                    row_k['Cur_Abbreviation']) + '</a>'
-                df1 = df1.append({'amchart': str_1}, ignore_index=True)
-                str_2 = '<a href="./' + str(
-                    row_k[
-                        'Cur_ID']) + '/matplotlib" target="_blank" id="but_mat" class ="badge badge-primary" style="width:50px">' + str(
-                    row_k['Cur_Abbreviation']) + '</a>'
-                df2 = df2.append({'matplotlib': str_2}, ignore_index=True)
-                str_3 = '<a href="./' + str(
-                    row_k[
-                        'Cur_ID']) + '/plotly" target="_blank" id="but_plt" class ="badge badge-primary" style="width:50px">' + str(
-                    row_k['Cur_Abbreviation']) + '</a>'
-                df3 = df3.append({'plotly': str_3}, ignore_index=True)
-                if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
-                    kurs = Valuta(Cur_ID=row_k['Cur_ID'],
-                                  Cur_Abbreviation=row_k['Cur_Abbreviation'],
-                                  Cur_Scale=row_k['Cur_Scale'],
-                                  Cur_Name=row_k['Cur_Name'])
-                    kurs.save()
-                if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
-                                              Date=row_k['Date']).exists() == False:
-                    val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
-                                      Cur_OfficialRate=row_k['Cur_OfficialRate'])
-                    val.save()
-            df['amchart'] = df1
-            df['matplotlib'] = df2
-            df['plotly'] = df3
-            if request.LANGUAGE_CODE == 'ru':
-                table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
-                                         columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate',
-                                                  'Cur_Scale',
-                                                  'amchart', 'matplotlib', 'plotly'])
-            else:
-                table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
-                                         columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_OfficialRate',
-                                                  'Cur_Scale',
-                                                  'amchart', 'matplotlib', 'plotly'])
-        except:
-            table_rates = '<table border="1" class="dataframe table table-striped">  <thead>    <tr style="text-align: right;">      <th>Cur_ID</th>      <th>Cur_Abbreviation</th>      <th>Cur_Name</th>      <th>Cur_OfficialRate</th>      <th>Cur_Scale</th>      <th>amchart</th>      <th>matplotlib</th>    </tr>  </thead></table>'
     else:
         username = 'Аноним'
-        table_rates = 'Вы не зарегистрированы или не имеете прав'
-
     return render_to_response('my_exrate/index.html',
-                              {'table': table_rates,
-                               'user': username, 'login_form': request.user.is_authenticated})
+                              {'user': username, 'login_form': request.user.is_authenticated})
 
 
 def user_login(request):
@@ -275,6 +220,70 @@ def rate_by_week(request, Cur_ID):
         table_rates = 'Вы не зарегистрированы или не имеете прав'
 
     return render_to_response('my_exrate/rate_by_week.html',
+                              {'table': table_rates,
+                               'user': username, 'login_form': request.user.is_authenticated})
+
+
+def rate_by_day(request):
+    if request.user.is_authenticated:
+        username = request.user
+        url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
+        try:
+            spisok_kursov = requests.get(url).json()
+            # чтобы df.to_html не обрезал длинные строки до 50 символов
+            pd.set_option('display.max_colwidth', -1)
+            df = pd.DataFrame(spisok_kursov)
+            # df.to_csv('file_rates.csv', encoding='utf-8', index=False, index_label=True)
+            df1 = pd.DataFrame(columns=['amchart'])
+            df2 = pd.DataFrame(columns=['matplotlib'])
+            df3 = pd.DataFrame(columns=['plotly'])
+            for row_k in spisok_kursov:
+                str_1 = '<a href="./' + str(
+                    row_k[
+                        'Cur_ID']) + '/amcharts" target="_blank" id="but_am" class ="badge badge-primary" style="width:50px">' + str(
+                    row_k['Cur_Abbreviation']) + '</a>'
+                df1 = df1.append({'amchart': str_1}, ignore_index=True)
+                str_2 = '<a href="./' + str(
+                    row_k[
+                        'Cur_ID']) + '/matplotlib" target="_blank" id="but_mat" class ="badge badge-primary" style="width:50px">' + str(
+                    row_k['Cur_Abbreviation']) + '</a>'
+                df2 = df2.append({'matplotlib': str_2}, ignore_index=True)
+                str_3 = '<a href="./' + str(
+                    row_k[
+                        'Cur_ID']) + '/plotly" target="_blank" id="but_plt" class ="badge badge-primary" style="width:50px">' + str(
+                    row_k['Cur_Abbreviation']) + '</a>'
+                df3 = df3.append({'plotly': str_3}, ignore_index=True)
+                if Valuta.objects.filter(Cur_ID=row_k['Cur_ID']).exists() == False:
+                    kurs = Valuta(Cur_ID=row_k['Cur_ID'],
+                                  Cur_Abbreviation=row_k['Cur_Abbreviation'],
+                                  Cur_Scale=row_k['Cur_Scale'],
+                                  Cur_Name=row_k['Cur_Name'])
+                    kurs.save()
+                if Valuta_kurs.objects.filter(Cur_ID_id=row_k['Cur_ID'],
+                                              Date=row_k['Date']).exists() == False:
+                    val = Valuta_kurs(Cur_ID_id=row_k['Cur_ID'], Date=row_k['Date'],
+                                      Cur_OfficialRate=row_k['Cur_OfficialRate'])
+                    val.save()
+            df['amchart'] = df1
+            df['matplotlib'] = df2
+            df['plotly'] = df3
+            if request.LANGUAGE_CODE == 'ru':
+                table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
+                                         columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_Name', 'Cur_OfficialRate',
+                                                  'Cur_Scale',
+                                                  'amchart', 'matplotlib', 'plotly'])
+            else:
+                table_rates = df.to_html(escape=False, index=False, classes="table table-striped",
+                                         columns=['Cur_ID', 'Cur_Abbreviation', 'Cur_OfficialRate',
+                                                  'Cur_Scale',
+                                                  'amchart', 'matplotlib', 'plotly'])
+        except:
+            table_rates = '<table border="1" class="dataframe table table-striped">  <thead>    <tr style="text-align: right;">      <th>Cur_ID</th>      <th>Cur_Abbreviation</th>      <th>Cur_Name</th>      <th>Cur_OfficialRate</th>      <th>Cur_Scale</th>      <th>amchart</th>      <th>matplotlib</th>    </tr>  </thead></table>'
+    else:
+        username = 'Аноним'
+        table_rates = 'Вы не зарегистрированы или не имеете прав'
+
+    return render_to_response('my_exrate/rate_by_day.html',
                               {'table': table_rates,
                                'user': username, 'login_form': request.user.is_authenticated})
 

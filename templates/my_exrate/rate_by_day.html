@@ -1,0 +1,11 @@
+{% extends "my_exrate/common.html" %}
+{% load static i18n %}
+
+{% block common_title %}
+    {% trans "Курс за день" %}
+{% endblock %}
+
+{% block common_body %}
+    {{ table|safe }}
+{% endblock %}
+

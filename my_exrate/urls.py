@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^(?P<Cur_ID>[0-9]+)/matplotlib', views.matplotlib, name='matplotlib'),
     url(r'^(?P<Cur_ID>[0-9]+)/plotly', views.plotly, name='plotly'),
     url(r'^(?P<Cur_ID>[0-9]+)/rate_by_week', views.rate_by_week, name='rate_by_week'),
+    url(r'^rate_by_day$', views.rate_by_day, name='rate_by_day'),
     # url(r'^my_exrate/amcharts/$', views.amcharts, name='amcharts'),
     url(r'^(?P<Cur_ID>[0-9]+)/amcharts$', views.amcharts, name='amcharts'),
     # url(r'^my_exrate/csv_file/$', views.csv_file, name='csv_file'),
